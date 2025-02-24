@@ -32,4 +32,9 @@ publishing {
             }
         }
     }
+    publications {
+        group(MavenPublication) {
+            from(components.java)
+        }
+    }
 }
