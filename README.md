@@ -1,18 +1,15 @@
 # Schema Wrapping
 
 This project contains [Kafka Connect](https://docs.confluent.io/platform/current/connect/index.html) facilitating 
-classes allowing to stream a schemaless data into schema requiring sink e.g. 
+classes allowing to stream a schemaless data into the sink requiring schema e.g. 
 [JdbcSinkConnector](https://docs.confluent.io/kafka-connectors/jdbc/current/sink-connector/overview.html)
 
-
 ### Use SimpleSchemaWrappingConverter
-
-Use 
-```java
-net.tk.converter.SimpleSchemaWrappingConverter;
+In order to put raw schemaless content into sql table use 
 ```
-
-as *value.converter* e.g. following is full JdbcSinkConnector with  SimpleSchemaWrappingConverter 
+net.tk.converter.SimpleSchemaWrappingConverter
+```
+as *value.converter* e.g. following is a full JdbcSinkConnector configuration using *SimpleSchemaWrappingConverter*
 
 ```json
 {
