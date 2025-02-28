@@ -22,26 +22,26 @@ public class AddKeyAndOffsetTransformer<R extends ConnectRecord<R>> implements T
         }
 
         // Add offset as key
-        Schema keySchema = SchemaBuilder.struct()
+        var keySchema = SchemaBuilder.struct()
                 .field(OFFSET_KEY, Schema.INT64_SCHEMA)
                 .build();
-        Struct newKey = new Struct(keySchema);
+        var newKey = new Struct(keySchema);
         newKey.put(OFFSET_KEY, record.key());
 
         // Add topic name to value schema
-        Schema valueSchema = record.valueSchema();
+        var valueSchema = record.valueSchema();
         if (valueSchema == null) {
             valueSchema = SchemaBuilder.struct()
                     .field(TOPIC_NAME, Schema.STRING_SCHEMA)
                     .build();
-            Struct newValue = new Struct(valueSchema);
+            var newValue = new Struct(valueSchema);
             newValue.put(TOPIC_NAME, record.topic());
             return record.newRecord(record.topic(), record.kafkaPartition(), keySchema, newKey, valueSchema, newValue, record.timestamp());
         } else {
-            Schema updatedValueSchema = SchemaBuilder.array(valueSchema)
+            var updatedValueSchema = SchemaBuilder.array(valueSchema)
                     .field(TOPIC_NAME, Schema.STRING_SCHEMA)
                     .build();
-            Struct updatedValue = new Struct(updatedValueSchema);
+            var updatedValue = new Struct(updatedValueSchema);
             updatedValue.put(TOPIC_NAME, record.topic());
             if (record.value() instanceof Struct originalValue) {
                 for (var field : originalValue.schema().fields()) {
