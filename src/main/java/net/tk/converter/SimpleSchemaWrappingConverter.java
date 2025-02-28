@@ -13,22 +13,19 @@ import org.apache.kafka.connect.data.Struct;
 import org.apache.kafka.connect.errors.DataException;
 import org.apache.kafka.connect.storage.Converter;
 import org.apache.kafka.connect.storage.ConverterType;
-import org.apache.kafka.connect.storage.StringConverterConfig;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static net.tk.converter.SimpleSchemaWrappingConverterConfig.CONTENT_NAME_DEFAULT;
+
 
 public class SimpleSchemaWrappingConverter implements Converter, Versioned {
-    public static final String CONTENT = "content";
-
-
+    public static String CONTENT = CONTENT_NAME_DEFAULT;
     private final StringSerializer serializer = new StringSerializer();
     private final StringDeserializer deserializer = new StringDeserializer();
 
-    private static final Schema SCHEMA = SchemaBuilder.struct()
-            .field(CONTENT, Schema.STRING_SCHEMA)
-            .build();
+    private static Schema SCHEMA = null;
 
     @Override
     public String version() {
@@ -37,12 +34,16 @@ public class SimpleSchemaWrappingConverter implements Converter, Versioned {
 
     @Override
     public ConfigDef config() {
-        return StringConverterConfig.configDef();
+        return SimpleSchemaWrappingConverterConfig.configDef();
     }
 
     public void configure(Map<String, ?> configs) {
-        var conf = new StringConverterConfig(configs);
+        var conf = new SimpleSchemaWrappingConverterConfig(configs);
         var encoding = conf.encoding();
+        CONTENT = conf.contentName();
+        SCHEMA = SchemaBuilder.struct()
+                .field(CONTENT, Schema.STRING_SCHEMA)
+                .build();
         var serializerConfigs = new HashMap<String, Object>(configs);
         var deserializerConfigs = new HashMap<String, Object>(configs);
         serializerConfigs.put("serializer.encoding", encoding);
@@ -55,7 +56,7 @@ public class SimpleSchemaWrappingConverter implements Converter, Versioned {
     @Override
     public void configure(Map<String, ?> configs, boolean isKey) {
         var conf = new HashMap<String, Object>(configs);
-        conf.put(StringConverterConfig.TYPE_CONFIG, isKey ? ConverterType.KEY.getName() : ConverterType.VALUE.getName());
+        conf.put(SimpleSchemaWrappingConverterConfig.TYPE_CONFIG, isKey ? ConverterType.KEY.getName() : ConverterType.VALUE.getName());
         configure(conf);
     }
 
