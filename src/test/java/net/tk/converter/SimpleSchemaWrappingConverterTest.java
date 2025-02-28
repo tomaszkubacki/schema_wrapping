@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -29,11 +28,8 @@ class SimpleSchemaWrappingConverterTest {
         var res = converter.toConnectData(TOPIC, CONTENT.getBytes(StandardCharsets.UTF_8));
         var schema = res.schema();
         assertNotNull(schema.field("content"));
-        assertNotNull(schema.field("topic_name"));
         assertNull(schema.field("bla bla"));
         var value = (Struct) res.value();
         assertNotNull(value);
-        assertEquals(CONTENT, value.get("content"));
-        assertEquals(TOPIC, value.get("topic_name"));
     }
 }

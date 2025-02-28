@@ -20,7 +20,6 @@ import java.util.Map;
 
 
 public class SimpleSchemaWrappingConverter implements Converter, Versioned {
-    public static final String TOPIC_NAME = "topic_name";
     public static final String CONTENT = "content";
 
 
@@ -28,7 +27,6 @@ public class SimpleSchemaWrappingConverter implements Converter, Versioned {
     private final StringDeserializer deserializer = new StringDeserializer();
 
     private static final Schema SCHEMA = SchemaBuilder.struct()
-            .field(TOPIC_NAME, Schema.STRING_SCHEMA)
             .field(CONTENT, Schema.STRING_SCHEMA)
             .build();
 
@@ -79,7 +77,6 @@ public class SimpleSchemaWrappingConverter implements Converter, Versioned {
         try {
             var strValue = deserializer.deserialize(topic, value);
             var struct = new Struct(SCHEMA);
-            struct.put(TOPIC_NAME, topic);
             struct.put(CONTENT, strValue);
             return new SchemaAndValue(SCHEMA, struct);
         } catch (SerializationException e) {
