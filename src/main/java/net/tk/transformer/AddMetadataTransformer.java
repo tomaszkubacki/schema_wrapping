@@ -22,17 +22,18 @@ public class AddMetadataTransformer<R extends ConnectRecord<R>> implements Trans
     private static final String TS_MAPPING_DEFAULT = TS_MAPPING;
     private static final String HEADERS = "headers";
     private static final String HEADERS_REGEX_DEFAULT = "";
-    private static final String HEADERS_PREFIX = "headers_prefix";
-    private static final String HEADERS_PREFIX_DEFAULT = "";
+    private static final String HEADER_PREFIX = "header_prefix";
+    private static final String HEADER_PREFIX_DEFAULT = "hdr_";
 
     public static final ConfigDef CONFIG_DEF = new ConfigDef()
             .define(KEY_MAPPING, ConfigDef.Type.STRING, KEY_MAPPING, ConfigDef.Importance.MEDIUM, "target field name for message key")
             .define(TS_MAPPING, ConfigDef.Type.STRING, TS_MAPPING, ConfigDef.Importance.MEDIUM, "target field name to message timestamp")
             .define(HEADERS, ConfigDef.Type.LIST, HEADERS_REGEX_DEFAULT, ConfigDef.Importance.MEDIUM, "comma separated list of headers to add")
-            .define(HEADERS_PREFIX, ConfigDef.Type.STRING, HEADERS_PREFIX_DEFAULT, ConfigDef.Importance.LOW, "prefix for target header field names");
+            .define(HEADER_PREFIX, ConfigDef.Type.STRING, HEADER_PREFIX_DEFAULT, ConfigDef.Importance.LOW, "prefix for target header field names");
 
     private static String keyMapping = KEY_MAPPING_DEFAULT;
     private static String tsMapping = TS_MAPPING_DEFAULT;
+    private static String headerPrefix = HEADER_PREFIX_DEFAULT;
     private static final Set<String> headerSet = new HashSet<>();
 
     @Override
@@ -56,7 +57,7 @@ public class AddMetadataTransformer<R extends ConnectRecord<R>> implements Trans
                     .field(tsMapping, Schema.INT64_SCHEMA);
 
             for (var header : headerValues.keySet()) {
-                valueSchemaBuilder.field(HEADERS_PREFIX + header, Schema.OPTIONAL_STRING_SCHEMA);
+                valueSchemaBuilder.field(headerPrefix + header, Schema.OPTIONAL_STRING_SCHEMA);
             }
             var newValueSchema = valueSchemaBuilder.build();
             var newValue = new Struct(newValueSchema);
@@ -64,7 +65,7 @@ public class AddMetadataTransformer<R extends ConnectRecord<R>> implements Trans
             newValue.put(TS_MAPPING, record.timestamp());
 
             for (var header : headerValues.keySet()) {
-                newValue.put(HEADERS_PREFIX + header, headerValues.get(header));
+                newValue.put(headerPrefix + header, headerValues.get(header));
             }
 
             return record.newRecord(record.topic(), record.kafkaPartition(), record.keySchema(), record.key(), newValue.schema(), newValue, record.timestamp());
@@ -79,7 +80,7 @@ public class AddMetadataTransformer<R extends ConnectRecord<R>> implements Trans
             valueSchemaBuilder.field(tsMapping, Schema.INT64_SCHEMA);
 
             for (var header : headerValues.keySet()) {
-                valueSchemaBuilder.field(HEADERS_PREFIX + header, Schema.OPTIONAL_STRING_SCHEMA);
+                valueSchemaBuilder.field(headerPrefix + header, Schema.OPTIONAL_STRING_SCHEMA);
             }
 
             var updatedValueSchema = valueSchemaBuilder.build();
@@ -93,7 +94,7 @@ public class AddMetadataTransformer<R extends ConnectRecord<R>> implements Trans
             updatedValue.put(TS_MAPPING, record.timestamp());
 
             for (var header : headerValues.keySet()) {
-                updatedValue.put(HEADERS_PREFIX + header, headerValues.get(header));
+                updatedValue.put(headerPrefix + header, headerValues.get(header));
             }
 
             return record.newRecord(record.topic(), record.kafkaPartition(), record.keySchema(), record.key(), updatedValueSchema, updatedValue, record.timestamp());
@@ -116,6 +117,7 @@ public class AddMetadataTransformer<R extends ConnectRecord<R>> implements Trans
         final var config = new AddMetadataConfig(CONFIG_DEF, props);
         keyMapping = config.getString(KEY_MAPPING);
         tsMapping = config.getString(TS_MAPPING);
+        headerPrefix = config.getString(HEADER_PREFIX);
         headerSet.addAll(config.getList(HEADERS));
     }
 }
