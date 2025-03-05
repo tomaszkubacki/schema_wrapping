@@ -1,4 +1,4 @@
-package net.tk.converter;
+package net.tk.kafka.connect.converter;
 
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.connect.storage.ConverterConfig;

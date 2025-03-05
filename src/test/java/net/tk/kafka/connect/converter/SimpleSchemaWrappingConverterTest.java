@@ -1,4 +1,4 @@
-package net.tk.converter;
+package net.tk.kafka.connect.converter;
 
 
 import org.apache.kafka.connect.data.Struct;
