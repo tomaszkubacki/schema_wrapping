@@ -1,4 +1,4 @@
-package net.tk.converter;
+package net.tk.kafka.connect.converter;
 
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.common.errors.SerializationException;
@@ -17,7 +17,7 @@ import org.apache.kafka.connect.storage.ConverterType;
 import java.util.HashMap;
 import java.util.Map;
 
-import static net.tk.converter.SimpleSchemaWrappingConverterConfig.CONTENT_NAME_DEFAULT;
+import static net.tk.kafka.connect.converter.SimpleSchemaWrappingConverterConfig.CONTENT_NAME_DEFAULT;
 
 
 public class SimpleSchemaWrappingConverter implements Converter, Versioned {

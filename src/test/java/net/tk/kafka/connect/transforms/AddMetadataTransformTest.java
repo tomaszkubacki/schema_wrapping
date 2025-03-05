@@ -1,4 +1,4 @@
-package net.tk.transformer;
+package net.tk.kafka.connect.transforms;
 
 import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.data.SchemaBuilder;
@@ -14,9 +14,9 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class SchemaWrappingTransformerTest {
+class AddMetadataTransformTest {
 
-    SchemaWrappingTransformer<SourceRecord> transformer = new SchemaWrappingTransformer<>();
+    AddMetadataTransform<SourceRecord> transformer = new AddMetadataTransform<>();
 
     @Test
     void apply_with_schema() {

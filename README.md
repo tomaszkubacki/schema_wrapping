@@ -5,11 +5,15 @@ classes allowing to stream a schemaless data into the sink requiring schema e.g.
 [JdbcSinkConnector](https://docs.confluent.io/kafka-connectors/jdbc/current/sink-connector/overview.html)
 
 ### Use SimpleSchemaWrappingConverter
-In order to put raw schemaless content into sql table use 
+In order to put raw schemaless messages into sql table use *SimpleSchemaWrappingConverter* 
+```java
+import net.tk.kafka.connect.converter.SimpleSchemaWrappingConverter;
 ```
-net.tk.converter.SimpleSchemaWrappingConverter
+and (optional) *AddMetadataTransform* if you want to have topic key, timestamp and headers in your table 
+```java
+import net.tk.kafka.connect.transforms.AddMetadataTransform;
 ```
-as *value.converter* e.g. following is a full JdbcSinkConnector configuration using *SimpleSchemaWrappingConverter*
+### Example configuration for PostgreSQL
 
 ```json
 {
@@ -28,12 +32,21 @@ as *value.converter* e.g. following is a full JdbcSinkConnector configuration us
     "auto.evolve": "false",
     "tasks.max": "1",
     "batch.size": "1000",
-    "key.converter.schemas.enable": "false",
-    "value.converter.schemas.enable": "false",
     "insert.mode": "INSERT",
     "errors.tolerance": "all",
     "errors.log.enable": "true",
-    "pk.mode": "none"
+    "key.converter.schemas.enable": "false",
+    "value.converter": "net.tk.kafka.connect.converter.SimpleSchemaWrappingConverter",
+    "value.converter.schemas.enable": "false",
+    "transforms": "addRecordMetadata",
+    "transforms.addRecordMetadata.type": "net.tk.kafka.connect.transforms.AddMetadataTransform",
+    "transforms.addRecordMetadata.headers": "a-b-c;abc",
+    "pk.mode": "kafka",
+    "pk.fields": "kafka_topic,kafka_partition,kafka_offset"
   }
 }
 ```
+
+### Configurations
+
+Both *SimpleSchemaWrappingConverter* and *AddMetadataTransform* allow config field mappings (e.g. to change column name in JdbcSinkConnector).

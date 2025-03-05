@@ -1,4 +1,4 @@
-package net.tk.transformer;
+package net.tk.kafka.connect.transforms;
 
 
 import org.apache.kafka.common.config.ConfigDef;
@@ -12,7 +12,7 @@ import org.apache.kafka.connect.transforms.util.SchemaUtil;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SchemaWrappingTransformer<R extends ConnectRecord<R>> implements Transformation<R> {
+public class AddMetadataTransform<R extends ConnectRecord<R>> implements Transformation<R> {
 
     private static final String VALUE_MAPPING = "content";
     private static final String VALUE_MAPPING_DEFAULT = "content";
@@ -122,7 +122,7 @@ public class SchemaWrappingTransformer<R extends ConnectRecord<R>> implements Tr
 
     @Override
     public void configure(Map<String, ?> props) {
-        final var config = new SchemaWrappingConfig(CONFIG_DEF, props);
+        final var config = new AddMetadataConfig(CONFIG_DEF, props);
         valueField = config.getString(VALUE_MAPPING);
         keyMapping = config.getString(KEY_MAPPING);
         tsMapping = config.getString(TS_MAPPING);
