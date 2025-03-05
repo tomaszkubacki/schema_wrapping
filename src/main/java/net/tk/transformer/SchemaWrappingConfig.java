@@ -5,9 +5,9 @@ import org.apache.kafka.common.config.ConfigDef;
 
 import java.util.Map;
 
-public class AddMetadataConfig extends AbstractConfig {
+public class SchemaWrappingConfig extends AbstractConfig {
 
-    public AddMetadataConfig(ConfigDef configDef, Map<?, ?> originals) {
+    public SchemaWrappingConfig(ConfigDef configDef, Map<?, ?> originals) {
         super(configDef, originals, false);
     }
 

@@ -14,15 +14,15 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class AddMetadataTransformerTest {
+class SchemaWrappingTransformerTest {
 
-    AddMetadataTransformer<SourceRecord> transformer = new AddMetadataTransformer<>();
+    SchemaWrappingTransformer<SourceRecord> transformer = new SchemaWrappingTransformer<>();
 
     @Test
-    void apply() {
+    void apply_with_schema() {
         final Map<String, Object> props = new HashMap<>();
         props.put("header_prefix", "");
-        props.put("headers", "ce_id,abc");
+        props.put("headers", "ce_id,AB-C;ab_c");
 
         transformer.configure(props);
 
@@ -35,28 +35,61 @@ class AddMetadataTransformerTest {
 
         final Map<String, String> headersMap = new HashMap<>();
         headersMap.put("ce_id", "2342343242");
-        headersMap.put("abc", "zoo");
+        headersMap.put("AB-C", "zoo");
         var ts = 83883L;
-        final SourceRecord record = createRecord("zonk", ts, simpleStructSchema, simpleStruct, headersMap);
+        var key = "key value";
+
+        final SourceRecord record = createStructRecord(key, ts, simpleStructSchema, simpleStruct, headersMap);
         final SourceRecord transformedRecord = transformer.apply(record);
         var valueSchema = transformedRecord.valueSchema();
         assertNotNull(valueSchema.field("message_key"));
         assertNotNull(valueSchema.field("message_ts"));
         assertNotNull(valueSchema.field("ce_id"));
-        assertNotNull(valueSchema.field("abc"));
+        assertNotNull(valueSchema.field("ab_c"));
         assertNotNull(valueSchema.field("roko"));
         Struct value = (Struct) transformedRecord.value();
-        assertEquals("zonk", value.get("message_key"));
+        assertEquals(key, value.get("message_key"));
         assertEquals(ts, value.get("message_ts"));
-        assertEquals("zoo", value.get("abc"));
+        assertEquals("zoo", value.get("ab_c"));
         assertEquals(42L, value.get("roko"));
     }
 
-    static SourceRecord createRecord(String key, long ts, Schema simpleStructSchema,
-                                     Struct simpleStruct, Map<String, String> headersMap) {
+    @Test
+    void apply_with_schemaless() {
+        final Map<String, Object> props = new HashMap<>();
+        props.put("content", "data");
+        props.put("header_prefix", "");
+        props.put("headers", "ce-id;ce_id");
+        transformer.configure(props);
+        final Map<String, String> headersMap = new HashMap<>();
+        headersMap.put("ce-id", "2342343242");
+        headersMap.put("AB-C", "zoo");
+        var ts = 83883L;
+        var content = "this is the content";
+        var key = "my_key";
+        final SourceRecord record = createStringRecord(key, ts, content, headersMap);
+        final SourceRecord transformedRecord = transformer.apply(record);
+        var valueSchema = transformedRecord.valueSchema();
+        assertNotNull(valueSchema.field("message_key"));
+        assertNotNull(valueSchema.field("message_ts"));
+        assertNotNull(valueSchema.field("ce_id"));
+        Struct value = (Struct) transformedRecord.value();
+        assertEquals(content, value.get("data"));
+        assertEquals(key, value.get("message_key"));
+        assertEquals(ts, value.get("message_ts"));
+    }
+
+    static SourceRecord createStructRecord(String key, long ts, Schema simpleStructSchema,
+                                           Struct simpleStruct, Map<String, String> headersMap) {
         return new SourceRecord(null, null, "test", 0,
                 null, key, simpleStructSchema,
                 simpleStruct, ts, createHeaderList(headersMap));
+    }
+
+    static SourceRecord createStringRecord(String key, long ts, String data, Map<String, String> headersMap) {
+        return new SourceRecord(null, null, "test", 0,
+                null, key, null,
+                data, ts, createHeaderList(headersMap));
     }
 
     static List<Header> createHeaderList(Map<String, String> headersMap) {
