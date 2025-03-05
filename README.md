@@ -40,7 +40,7 @@ import net.tk.kafka.connect.transforms.AddMetadataTransform;
     "value.converter.schemas.enable": "false",
     "transforms": "addRecordMetadata",
     "transforms.addRecordMetadata.type": "net.tk.kafka.connect.transforms.AddMetadataTransform",
-    "transforms.addRecordMetadata.headers": "a-b-c;abc",
+    "transforms.addRecordMetadata.headers": "a-b-c;abc,other_header;other_header_mapped",
     "pk.mode": "kafka",
     "pk.fields": "kafka_topic,kafka_partition,kafka_offset"
   }
