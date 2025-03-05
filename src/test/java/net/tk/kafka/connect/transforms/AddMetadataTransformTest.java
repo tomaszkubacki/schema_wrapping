@@ -60,6 +60,8 @@ class AddMetadataTransformTest {
         props.put("content", "data");
         props.put("header_prefix", "");
         props.put("headers", "ce-id;ce_id");
+        props.put("message_key", "kafka_key");
+        props.put("message_ts", "kafka_ts");
         transformer.configure(props);
         final Map<String, String> headersMap = new HashMap<>();
         headersMap.put("ce-id", "2342343242");
@@ -70,13 +72,13 @@ class AddMetadataTransformTest {
         final SourceRecord record = createStringRecord(key, ts, content, headersMap);
         final SourceRecord transformedRecord = transformer.apply(record);
         var valueSchema = transformedRecord.valueSchema();
-        assertNotNull(valueSchema.field("message_key"));
-        assertNotNull(valueSchema.field("message_ts"));
+        assertNotNull(valueSchema.field("kafka_key"));
+        assertNotNull(valueSchema.field("kafka_ts"));
         assertNotNull(valueSchema.field("ce_id"));
         Struct value = (Struct) transformedRecord.value();
         assertEquals(content, value.get("data"));
-        assertEquals(key, value.get("message_key"));
-        assertEquals(ts, value.get("message_ts"));
+        assertEquals(key, value.get("kafka_key"));
+        assertEquals(ts, value.get("kafka_ts"));
     }
 
     static SourceRecord createStructRecord(String key, long ts, Schema simpleStructSchema,

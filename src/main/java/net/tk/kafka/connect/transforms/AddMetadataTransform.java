@@ -78,8 +78,8 @@ public class AddMetadataTransform<R extends ConnectRecord<R>> implements Transfo
             updatedValue.put(field.name(), originalValue.get(field));
         }
 
-        updatedValue.put(KEY_MAPPING, record.key() != null ? record.key().toString() : null);
-        updatedValue.put(TS_MAPPING, record.timestamp());
+        updatedValue.put(keyMapping, record.key() != null ? record.key().toString() : null);
+        updatedValue.put(tsMapping, record.timestamp());
 
         for (var header : headerValues.keySet()) {
             updatedValue.put(header, headerValues.get(header));
@@ -100,8 +100,8 @@ public class AddMetadataTransform<R extends ConnectRecord<R>> implements Transfo
         var newValueSchema = valueSchemaBuilder.build();
         var newValue = new Struct(newValueSchema);
         newValue.put(valueField, record.value() != null ? record.value().toString() : null);
-        newValue.put(KEY_MAPPING, record.key() != null ? record.key().toString() : null);
-        newValue.put(TS_MAPPING, record.timestamp());
+        newValue.put(keyMapping, record.key() != null ? record.key().toString() : null);
+        newValue.put(tsMapping, record.timestamp());
 
         for (var header : headerValues.keySet()) {
             newValue.put(header, headerValues.get(header));
