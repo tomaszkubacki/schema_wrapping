@@ -55,7 +55,7 @@ class AddMetadataTransformTest {
     }
 
     @Test
-    void apply_with_schemaless() {
+    void apply_schemaless() {
         final Map<String, Object> props = new HashMap<>();
         props.put("content", "data");
         props.put("header_prefix", "");

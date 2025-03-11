@@ -14,9 +14,9 @@ public class SimpleSchemaWrappingConverterConfig extends ConverterConfig {
     private static final String ENCODING_DOC = "The name of the Java character set to use for encoding strings as byte arrays.";
     private static final String ENCODING_DISPLAY = "Encoding";
 
-    public static final String CONTENT_NAME_CONFIG = "converter.content.name";
+    public static final String CONTENT_NAME_CONFIG = "content.name";
     public static final String CONTENT_NAME_DEFAULT = "content";
-    private static final String CONTENT_NAME_DOC = "The name of content name filed defaults to 'content'.";
+    private static final String CONTENT_NAME_DOC = "Name of the content field. Defaults to 'content'.";
     private static final String CONTENT_NAME_DISPLAY = "ContentFieldName";
 
     private static final ConfigDef CONFIG;

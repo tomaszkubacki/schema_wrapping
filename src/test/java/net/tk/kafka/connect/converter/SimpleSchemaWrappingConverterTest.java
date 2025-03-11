@@ -38,7 +38,7 @@ class SimpleSchemaWrappingConverterTest {
     void toConnectDataNonDefaultContentName() {
         var contentFieldName = "otherContent";
         var config = new HashMap<String,Object>();
-        config.put("converter.content.name", contentFieldName);
+        config.put("content.name", contentFieldName);
         converter.configure(config, false);
         var res = converter.toConnectData(TOPIC, CONTENT.getBytes(StandardCharsets.UTF_8));
         var schema = res.schema();
