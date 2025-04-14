@@ -12,6 +12,10 @@ import org.apache.kafka.connect.transforms.util.SchemaUtil;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.apache.kafka.common.config.ConfigDef.Importance.MEDIUM;
+import static org.apache.kafka.common.config.ConfigDef.Type.STRING;
+import static org.apache.kafka.connect.data.Schema.OPTIONAL_STRING_SCHEMA;
+
 public class AddMetadataTransform<R extends ConnectRecord<R>> implements Transformation<R> {
 
     private static final String VALUE_MAPPING = "content";
@@ -25,10 +29,10 @@ public class AddMetadataTransform<R extends ConnectRecord<R>> implements Transfo
     private static final String HEADER_MAPPING_SPLIT_CHAR = ";";
 
     public static final ConfigDef CONFIG_DEF = new ConfigDef()
-            .define(VALUE_MAPPING, ConfigDef.Type.STRING, VALUE_MAPPING_DEFAULT, ConfigDef.Importance.MEDIUM, "target field name for value if message is schemaless")
-            .define(KEY_MAPPING, ConfigDef.Type.STRING, KEY_MAPPING, ConfigDef.Importance.MEDIUM, "target field name for message key")
-            .define(TS_MAPPING, ConfigDef.Type.STRING, TS_MAPPING, ConfigDef.Importance.MEDIUM, "target field name to message timestamp")
-            .define(HEADERS_MAPPING, ConfigDef.Type.LIST, HEADERS_MAPPING_DEFAULT, ConfigDef.Importance.MEDIUM, "comma separated list of headers mappings to add");
+            .define(VALUE_MAPPING, STRING, VALUE_MAPPING_DEFAULT, MEDIUM, "target field name for value if message is schemaless")
+            .define(KEY_MAPPING, STRING, KEY_MAPPING, MEDIUM, "target field name for message key")
+            .define(TS_MAPPING, STRING, TS_MAPPING, MEDIUM, "target field name to message timestamp")
+            .define(HEADERS_MAPPING, ConfigDef.Type.LIST, HEADERS_MAPPING_DEFAULT, MEDIUM, "comma separated list of headers mappings to add");
 
     private static String valueField = VALUE_MAPPING_DEFAULT;
     private static String keyMapping = KEY_MAPPING_DEFAULT;
@@ -64,11 +68,11 @@ public class AddMetadataTransform<R extends ConnectRecord<R>> implements Transfo
             valueSchemaBuilder.field(field.name(), field.schema());
         }
 
-        valueSchemaBuilder.field(keyMapping, Schema.OPTIONAL_STRING_SCHEMA);
+        valueSchemaBuilder.field(keyMapping, OPTIONAL_STRING_SCHEMA);
         valueSchemaBuilder.field(tsMapping, Schema.INT64_SCHEMA);
 
         for (var header : headerValues.keySet()) {
-            valueSchemaBuilder.field(header, Schema.OPTIONAL_STRING_SCHEMA);
+            valueSchemaBuilder.field(header, OPTIONAL_STRING_SCHEMA);
         }
 
         var updatedValueSchema = valueSchemaBuilder.build();
@@ -90,12 +94,12 @@ public class AddMetadataTransform<R extends ConnectRecord<R>> implements Transfo
 
     private static <R extends ConnectRecord<R>> R applySchemaless(R record, HashMap<String, String> headerValues) {
         var valueSchemaBuilder = SchemaBuilder.struct()
-                .field(valueField, Schema.OPTIONAL_STRING_SCHEMA)
-                .field(keyMapping, Schema.OPTIONAL_STRING_SCHEMA)
+                .field(valueField, OPTIONAL_STRING_SCHEMA)
+                .field(keyMapping, OPTIONAL_STRING_SCHEMA)
                 .field(tsMapping, Schema.INT64_SCHEMA);
 
         for (var header : headerValues.keySet()) {
-            valueSchemaBuilder.field(header, Schema.OPTIONAL_STRING_SCHEMA);
+            valueSchemaBuilder.field(header, OPTIONAL_STRING_SCHEMA);
         }
         var newValueSchema = valueSchemaBuilder.build();
         var newValue = new Struct(newValueSchema);
